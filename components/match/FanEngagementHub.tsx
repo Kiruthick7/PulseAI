@@ -12,8 +12,8 @@ interface FanEngagementHubProps {
 
 export default function FanEngagementHub({ gameState }: FanEngagementHubProps) {
   const [voted, setVoted] = useState(false);
-  const [pollIndex] = useState(() => Math.floor(Math.random() * 3)); // Randomize per session
-  
+  const [pollIndex] = useState(() => Math.floor(Math.random() * 3));
+
   const poll = getTacticalPoll(gameState?.matchStatus || "LIVE", pollIndex);
 
   return (
@@ -61,7 +61,7 @@ export default function FanEngagementHub({ gameState }: FanEngagementHubProps) {
                 className="group relative w-full overflow-hidden rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all p-4 text-left"
               >
                 {voted && (
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${opt.votes}%` }}
                     className="absolute inset-y-0 left-0 bg-cyan-500/10 z-0"

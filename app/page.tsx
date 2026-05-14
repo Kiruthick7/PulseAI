@@ -13,7 +13,8 @@ import FanEngagementHub from "@/components/match/FanEngagementHub";
 import MomentumMeter from "@/components/match/MomentumMeter";
 import WinProbability from "@/components/match/WinProbability";
 import { Activity, User, Zap, Target } from "lucide-react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import CustomCursor from "@/components/ui/CustomCursor";
 
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
@@ -22,6 +23,7 @@ export default function Dashboard() {
   const [hypePoints, setHypePoints] = useState(0);
   const [showPrediction, setShowPrediction] = useState(false);
   const [isCooldown, setIsCooldown] = useState(false);
+  const [isGlitching, setIsGlitching] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -29,7 +31,11 @@ export default function Dashboard() {
     if (saved) setHypePoints(parseInt(saved, 10));
   }, []);
 
-  // Trigger AI insight when new events occur
+  const triggerGlitch = () => {
+    setIsGlitching(true);
+    setTimeout(() => setIsGlitching(false), 500);
+  };
+
   useEffect(() => {
     if (gameState?.recentEvents?.length) {
       const latestEvent = gameState.recentEvents[0];
@@ -45,9 +51,9 @@ export default function Dashboard() {
     try {
       const res = await fetch("/api/ai-insight", {
         method: "POST",
-        body: JSON.stringify({ 
-          event, 
-          scoreA: gameState?.scoreA, 
+        body: JSON.stringify({
+          event,
+          scoreA: gameState?.scoreA,
           scoreB: gameState?.scoreB,
           battingTeam: gameState?.battingTeam,
           striker: gameState?.striker,
@@ -55,13 +61,13 @@ export default function Dashboard() {
         }),
       });
       const data = await res.json();
-      
+
       const newMessage: InsightMessage = {
         id: Math.random().toString(36).substr(2, 9),
         text: data.insightText || "Tactical sync active. Recalibrating analysis...",
         timestamp: new Date(),
       };
-      
+
       setMessages(prev => [newMessage, ...prev].slice(0, 10));
     } catch (err) {
       console.error("AI Insight error:", err);
@@ -71,6 +77,7 @@ export default function Dashboard() {
   };
 
   const handlePredict = (points: number) => {
+    triggerGlitch();
     const newPoints = hypePoints + points;
     setHypePoints(newPoints);
     localStorage.setItem("cricketpulse_points", newPoints.toString());
@@ -79,7 +86,8 @@ export default function Dashboard() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#020408] text-white selection:bg-cyan-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-[#020408] text-white selection:bg-cyan-500/30 overflow-x-hidden cursor-none">
+      <CustomCursor />
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,#164e63_0%,transparent_50%)] opacity-40 animate-neural-pulse" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')] opacity-[0.03] contrast-150" />
@@ -113,7 +121,7 @@ export default function Dashboard() {
               </div>
             </div>
             {gameState?.matchStatus !== "PRE-GAME" && gameState?.matchStatus !== "MATCH COMPLETE" && (
-              <button 
+              <button
                 onClick={() => setShowPrediction(true)}
                 className="px-6 lg:px-8 py-3 bg-white text-black text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-cyan-400 hover:text-white transition-all transform active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
               >
@@ -142,8 +150,8 @@ export default function Dashboard() {
                   { label: "Non-Striker", val: gameState?.nonStriker, icon: User, color: "text-gray-400" },
                   { label: "Bowler", val: gameState?.bowler, icon: Zap, color: "text-pink-500" }
                 ].map((p, i) => (
-                  <motion.div 
-                    key={i} 
+                  <motion.div
+                    key={i}
                     whileHover={{ y: -5, backgroundColor: "rgba(255,255,255,0.05)" }}
                     className="glass-morphism-dark rounded-[2rem] p-6 border border-white/5 transition-all duration-500 group"
                   >
@@ -168,10 +176,10 @@ export default function Dashboard() {
               </div>
               <div className="glass-morphism-dark rounded-[2.5rem] p-8 border border-white/10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <MomentumMeter score={gameState?.momentumScore ?? 50} />
-                <WinProbability 
-                  teamA={gameState?.teamA || "HOME"} 
-                  teamB={gameState?.teamB || "AWAY"} 
-                  probA={gameState?.momentumScore ?? 50} 
+                <WinProbability
+                  teamA={gameState?.teamA || "HOME"}
+                  teamB={gameState?.teamB || "AWAY"}
+                  probA={gameState?.momentumScore ?? 50}
                 />
               </div>
             </div>
@@ -192,6 +200,19 @@ export default function Dashboard() {
         onPredict={handlePredict}
         context="Will the next ball result in a boundary?"
       />
+
+      <AnimatePresence>
+        {isGlitching && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0, 0.8, 0] }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] pointer-events-none mix-blend-overlay bg-white/20 backdrop-invert backdrop-brightness-150"
+          >
+             <div className="absolute inset-0 bg-[url('https://media.giphy.com/media/oEI9uWUic979VpEiv0/giphy.gif')] opacity-20 mix-blend-screen bg-cover" />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

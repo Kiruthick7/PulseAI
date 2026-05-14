@@ -93,12 +93,17 @@ export default function AIPulseChat({ messages, isCooldown }: AIPulseChatProps) 
                 className="group relative"
               >
                 <div className="absolute -left-4 top-2 w-1 h-full bg-gradient-to-b from-cyan-500 to-transparent rounded-full opacity-40" />
-                <div className="flex flex-col gap-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-black text-cyan-500 uppercase tracking-widest">System Broadcast</span>
-                    <span className="text-[8px] font-mono text-gray-600">
-                      {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                    </span>
+                <div className="flex flex-col gap-3">
+                  <div className="flex justify-between items-center px-1">
+                    <div className="flex items-center gap-2">
+                       <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
+                       <span className="text-[8px] font-black text-cyan-500/60 uppercase tracking-widest">Neural Link: Stable</span>
+                    </div>
+                    <div className="px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/20">
+                       <span className="text-[8px] font-black text-cyan-400 uppercase tracking-widest">
+                          Tactical Confidence: {Math.floor(88 + Math.random() * 11)}%
+                       </span>
+                    </div>
                   </div>
                   <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 group-hover:border-white/10 transition-colors">
                     <p className="text-sm font-medium text-gray-300 leading-relaxed group-hover:text-white transition-colors">

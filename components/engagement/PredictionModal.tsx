@@ -29,14 +29,13 @@ export default function PredictionModal({ isOpen, onClose, onPredict, context }:
             className="absolute inset-0 bg-black/80 backdrop-blur-md"
             onClick={onClose}
           />
-          
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="relative w-full max-w-lg glass-morphism-dark rounded-[2.5rem] p-12 border border-cyan-500/30 shadow-[0_0_50px_rgba(34,211,238,0.2)] overflow-hidden"
           >
-            {/* Background Glow */}
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none" />
 
             <div className="flex justify-between items-start mb-8">

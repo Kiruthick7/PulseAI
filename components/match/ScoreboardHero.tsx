@@ -12,7 +12,7 @@ export default function ScoreboardHero({ gameState }: ScoreboardHeroProps) {
   return (
     <section className="glass-morphism-dark rounded-[3rem] p-12 border border-white/5 shadow-2xl relative overflow-hidden group">
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-purple-500/5 pointer-events-none" />
-      
+
       <div className="flex flex-col gap-8 relative z-10">
         <div className="flex justify-between items-center px-2">
           <div className="flex items-center gap-3">
@@ -24,7 +24,6 @@ export default function ScoreboardHero({ gameState }: ScoreboardHeroProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Team A */}
           <div className="lg:col-span-4 flex flex-col gap-6 items-center lg:items-start">
              <div className="flex flex-col items-center lg:items-start relative">
                 {gameState?.matchNote?.includes(gameState?.teamA) && (
@@ -42,7 +41,6 @@ export default function ScoreboardHero({ gameState }: ScoreboardHeroProps) {
              </div>
           </div>
 
-          {/* VS & Status */}
           <div className="lg:col-span-4 flex flex-col items-center justify-center gap-6">
              <div className="relative">
                 <div className="w-20 h-20 rounded-full border-2 border-white/5 flex items-center justify-center relative">
@@ -56,7 +54,7 @@ export default function ScoreboardHero({ gameState }: ScoreboardHeroProps) {
                 </div>
                 <div className="flex flex-col items-center gap-2">
                    <div className="text-[8px] font-bold text-gray-700 uppercase tracking-[0.6em]">Neural Sync v1.0.42</div>
-                   
+
                    {gameState?.maxOvers && (
                       <div className="flex items-center gap-3">
                          <div className="w-1.5 h-[1px] bg-cyan-500/40" />
@@ -79,7 +77,7 @@ export default function ScoreboardHero({ gameState }: ScoreboardHeroProps) {
                    )}
 
                    {gameState?.matchNote && (
-                     <motion.div 
+                     <motion.div
                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
                        animate={{ opacity: 1, y: 0, scale: 1 }}
                        className="mt-6 px-8 py-3 bg-green-500/20 border border-green-500/40 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.2)] flex flex-col items-center gap-1"
@@ -94,7 +92,6 @@ export default function ScoreboardHero({ gameState }: ScoreboardHeroProps) {
              </div>
           </div>
 
-          {/* Team B */}
           <div className="lg:col-span-4 flex flex-col gap-6 items-center lg:items-end">
              <div className="flex flex-col items-center lg:items-end relative">
                 {gameState?.matchNote?.includes(gameState?.teamB) && (

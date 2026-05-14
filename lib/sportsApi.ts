@@ -34,9 +34,8 @@ export type MatchState = {
 
 export async function fetchLiveMatchData(): Promise<MatchState> {
   try {
-    // ESPN IPL Scoreboard API
     const res = await fetch("https://site.api.espn.com/apis/site/v2/sports/cricket/8048/scoreboard", {
-      next: { revalidate: 15 } // Cache for 15 seconds
+      next: { revalidate: 15 }
     });
     const data = await res.json();
 
@@ -44,7 +43,6 @@ export async function fetchLiveMatchData(): Promise<MatchState> {
       throw new Error("No IPL events found in the current feed.");
     }
 
-    // Prioritize Live matches, then the most recent Result, then Upcoming
     const event = data.events.find((e: any) => e.status.type.state === "in") ||
                   data.events.find((e: any) => e.status.type.state === "post") ||
                   data.events[0];
@@ -54,21 +52,18 @@ export async function fetchLiveMatchData(): Promise<MatchState> {
     const teamB = competition.competitors.find((c: any) => c.homeAway === "away");
     const status = event.status;
 
-    // Determine which team batted first/second
     const isLive = status.type.state === "in";
     const isPost = status.type.state === "post";
     const isUpcoming = status.type.state === "pre";
 
-    // Team A is Home, Team B is Away (from ESPN layout)
     const scoreAStr = teamA.score ? (teamA.score.includes("(") ? teamA.score.replace(/, target \d+/, "").replace(/ ov/, "") : `${teamA.score} (20.0)`) : "0/0";
     const scoreBStr = teamB.score ? (teamB.score.includes("(") ? teamB.score.replace(/, target \d+/, "").replace(/ ov/, "") : `${teamB.score} (20.0)`) : (isUpcoming ? "Yet to Bat" : "0/0");
 
-    // Fetch detailed commentary from the summary endpoint for the specific match
     const summaryRes = await fetch(`http://site.api.espn.com/apis/site/v2/sports/cricket/8039/summary?event=${event.id}`);
     const summaryData = await summaryRes.json();
-    
+
     let recentEvents: SportsEvent[] = [];
-    
+
     if (summaryData.commentary && summaryData.commentary.length > 0) {
       recentEvents = summaryData.commentary.slice(0, 10).map((c: any, i: number) => ({
         id: `commentary-${i}`,
@@ -81,7 +76,6 @@ export async function fetchLiveMatchData(): Promise<MatchState> {
         scoreB: scoreBStr
       }));
     } else if (isUpcoming) {
-      // Inject high-quality tactical milestones for pre-match with phase indicators
       recentEvents = [
         { id: 'm1', timeElapsed: 'PHASE 01', type: 'Neural Sync', detail: 'Tactical Uplink established. Venue atmospheric analysis complete.', scoreA: '0/0', scoreB: '0/0', team: '', playerName: '' },
         { id: 'm2', timeElapsed: 'PHASE 02', type: 'Tactical Intel', detail: 'Head-to-head performance metrics calibrated for evening conditions.', scoreA: '0/0', scoreB: '0/0', team: '', playerName: '' },
@@ -103,8 +97,7 @@ export async function fetchLiveMatchData(): Promise<MatchState> {
     const matchNote = event.competitions[0].notes?.[0]?.text || (isPost ? status.type.detail : "");
     const leagueName = event.competitions[0].series?.name || "Indian Premier League";
     const matchLabel = event.competitions[0].status?.type?.shortDetail || "";
-    
-    // Heuristic target score extraction from summary (e.g., "Target 193" or "Need 10 runs")
+
     const targetMatch = status.summary?.match(/target\s*(\d+)|need\s*(\d+)/i);
     const dynamicTarget = targetMatch ? (targetMatch[1] || targetMatch[2]) : "";
 

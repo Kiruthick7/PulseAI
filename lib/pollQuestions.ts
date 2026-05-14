@@ -10,7 +10,6 @@ export interface PollQuestion {
 }
 
 export const TACTICAL_POLLS: PollQuestion[] = [
-  // PRE-GAME
   {
     phase: "PRE-GAME",
     question: "Who will have the biggest impact in the Powerplay today?",
@@ -35,8 +34,7 @@ export const TACTICAL_POLLS: PollQuestion[] = [
       { label: "No, stick to pace", votes: 25 }
     ]
   },
-  
-  // LIVE
+
   {
     phase: "LIVE",
     question: "Should the bowling side introduce spin now to stem the flow?",
@@ -70,7 +68,6 @@ export const TACTICAL_POLLS: PollQuestion[] = [
     ]
   },
 
-  // POST-MATCH
   {
     phase: "POST-MATCH",
     question: "What was the definitive tactical turning point of this match?",
@@ -91,10 +88,10 @@ export const TACTICAL_POLLS: PollQuestion[] = [
 
 export function getTacticalPoll(matchStatus: string, index: number = 0): PollQuestion {
   let phase: "PRE-GAME" | "LIVE" | "POST-MATCH" = "LIVE";
-  
+
   if (matchStatus === "PRE-GAME") phase = "PRE-GAME";
   if (matchStatus === "MATCH COMPLETE") phase = "POST-MATCH";
-  
+
   const filtered = TACTICAL_POLLS.filter(p => p.phase === phase);
   return filtered[index % filtered.length] || TACTICAL_POLLS[0];
 }

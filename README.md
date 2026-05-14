@@ -1,49 +1,48 @@
-# CricketPulse AI: The Infinite Cricket Companion
+# 🛰️ PulseAI: Neural Tactical Uplink
 
-Built for the Google Hackathon, CricketPulse AI is a real-time, AI-powered second-screen engagement platform.
+**"Not a dashboard, but a real-time strategic companion."**
 
-## Features
-- **Cinematic Dashboard**: Futuristic Cyber-Sports UI with glassmorphism and neon highlights.
-- **AI Pulse Stream**: Real-time contextual commentary powered by Groq Llama-3.
-- **Momentum Gauge**: Dynamic match pressure analysis.
-- **Fan Engagement**: Prediction Hub with a "Hype Points" gamification system.
-- **Cloud Native**: Optimized for Google Cloud Run with ultra-low latency.
+A high-fidelity cricket tactical companion built with Next.js 15, optimized for real-time analysis and immersive sports engagement.
 
-## Tech Stack
-- **Frontend**: Next.js 15, Tailwind CSS, Framer Motion
-- **AI**: Groq SDK (Llama-3-70b)
-- **Deployment**: Docker, Google Cloud Run
-- **Data**: Lightweight polling for real-time match state.
+---
 
-## Setup & Deployment
+## ⚡ CORE SYSTEMS
 
-### Local Development
-1. Clone the repository.
-2. Install dependencies: `npm install`
-3. Set environment variables in `.env.local`:
-   ```env
-   GROQ_API_KEY=your_key
-   FORCE_MOCK_DATA=true
-   ```
-4. Run: `npm run dev`
+- **Neural Tactical Engine**: Llama-3.3-70B analyst-grade insights via Groq.
+- **Match Flux Analysis**: Live momentum and win-probability telemetry.
+- **Fan Tactical Link**: High-precision strategic polling and engagement.
+- **Neural Interface**: Custom spring-physics cursor and tactical glitch feedback loops.
 
-### Deployment to Google Cloud Run
-1. Build the Docker image:
-   ```bash
-   gcloud builds submit --tag gcr.io/[PROJECT_ID]/cricket-pulse
-   ```
-2. Deploy to Cloud Run:
-   ```bash
-   gcloud run deploy cricket-pulse \
-     --image gcr.io/[PROJECT_ID]/cricket-pulse \
-     --platform managed \
-     --region us-central1 \
-     --allow-unauthenticated \
-     --set-env-vars GROQ_API_KEY=your_key
-   ```
+---
 
-## Demo Flow for Judges
-1. **Initial Impression**: Showcase the "Neural Stream" and glowing scoreboard.
-2. **Real-time Event**: Watch as new ball-by-ball events trigger AI commentary.
-3. **Engagement**: Trigger a prediction poll (Automatic after major events like Boundaries/Wickets).
-4. **Gamification**: Accumulate "Hype Points" and show the leaderboard-ready state.
+## 🛠️ TECH STACK
+
+- **Framework**: Next.js 15 (App Router)
+- **AI**: Groq Llama-3.3-70B-Versatile
+- **Animations**: Framer Motion
+- **Data Source**: ESPN Scoreboard API
+- **Deployment**: Optimized for Google Cloud Run (Stateless Architecture)
+
+---
+
+## 📡 DEPLOYMENT
+
+### 1. Environment Configuration
+Create `.env.local` in the root:
+```bash
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+### 2. Initialization
+```bash
+npm install
+npm run dev
+```
+
+### 3. Tactical Mock Mode
+To simulate live match states during pre-game:
+`http://localhost:3000/?mock=true`
+
+---
+
+**"The strategy is being won here."**

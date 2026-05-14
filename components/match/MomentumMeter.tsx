@@ -7,31 +7,40 @@ interface MomentumMeterProps {
 }
 
 export default function MomentumMeter({ score }: MomentumMeterProps) {
-  // score is 0-100, 50 is neutral
   const normalizedScore = Math.round(Math.min(Math.max(score, 0), 100));
-  const rotation = (normalizedScore / 100) * 180 - 90; // -90 to 90 degrees
+  const isPreGame = score === 50;
+  const rotation = ((score - 50) * 1.8);
 
   return (
-    <div className="flex flex-col items-center gap-8 py-4 w-full">
-      <div className="relative w-48 h-24 overflow-hidden">
-        {/* The Meter Arch Background */}
-        <div className="absolute bottom-0 w-48 h-48 rounded-full border-[12px] border-white/5" />
-        
-        {/* The Active Meter Arch */}
-        <motion.div 
-          className="absolute bottom-0 w-48 h-48 rounded-full border-[12px] border-transparent border-t-cyan-500/40 border-r-cyan-500/40"
-          style={{ rotate: rotation }}
-          animate={{ rotate: rotation }}
-          transition={{ type: "spring", stiffness: 30, damping: 15 }}
-        />
-        
-        {/* Glow Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
+    <div className="flex flex-col items-center gap-6 group">
+      <div className="relative w-64 h-32 overflow-hidden">
+        <div className="absolute inset-0 rounded-t-full border-[12px] border-white/5" />
+        <div className="absolute inset-0 rounded-t-full border-[12px] border-cyan-500/20 blur-sm" />
+
+        <motion.div
+          animate={isPreGame ? {
+            rotate: [-2, 2, -2],
+          } : {
+            rotate: rotation
+          }}
+          transition={isPreGame ? {
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          } : {
+            type: "spring",
+            stiffness: 50,
+            damping: 15
+          }}
+          className="absolute bottom-0 left-1/2 -ml-[2px] w-1 h-32 bg-gradient-to-t from-cyan-500 to-transparent origin-bottom z-20"
+        >
+          <div className="w-4 h-4 bg-cyan-500 rounded-full -ml-[6px] mt-28 shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
+        </motion.div>
       </div>
 
       <div className="flex flex-col items-center -mt-12 relative z-20">
         <div className="flex items-baseline gap-1">
-          <motion.span 
+          <motion.span
             key={score}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
