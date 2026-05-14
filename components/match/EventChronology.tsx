@@ -42,16 +42,39 @@ export default function EventChronology({ events }: EventChronologyProps) {
                     <div className="w-[1px] flex-1 bg-gradient-to-b from-white/10 to-transparent my-2" />
                  </div>
 
-                 <div className="flex-1 bg-white/[0.02] hover:bg-white/[0.04] p-5 rounded-2xl border-l-2 border-l-transparent group-hover:border-l-cyan-500 transition-all duration-300">
+                 <div className={`flex-1 p-5 rounded-2xl border-l-2 transition-all duration-300 ${
+                    event.type.includes('WICKET') 
+                      ? 'bg-red-500/5 border-l-red-500' 
+                      : event.type.includes('SIX') 
+                        ? 'bg-purple-500/5 border-l-purple-500' 
+                        : event.type.includes('FOUR') 
+                          ? 'bg-emerald-500/5 border-l-emerald-500' 
+                          : 'bg-white/[0.02] hover:bg-white/[0.04] border-l-transparent group-hover:border-l-cyan-500'
+                 }`}>
                     <div className="flex items-center gap-4 mb-2">
-                       <div className="px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/20 rounded-md">
-                          <span className="text-[9px] font-mono font-black text-cyan-400 tracking-wider">
+                       <div className={`px-2 py-0.5 rounded-md ${
+                          event.type.includes('WICKET') ? 'bg-red-500/10 border border-red-500/20' :
+                          event.type.includes('SIX') ? 'bg-purple-500/10 border border-purple-500/20' :
+                          event.type.includes('FOUR') ? 'bg-emerald-500/10 border border-emerald-500/20' :
+                          'bg-cyan-500/10 border border-cyan-500/20'
+                       }`}>
+                          <span className={`text-[9px] font-mono font-black tracking-wider ${
+                             event.type.includes('WICKET') ? 'text-red-400' :
+                             event.type.includes('SIX') ? 'text-purple-400' :
+                             event.type.includes('FOUR') ? 'text-emerald-400' :
+                             'text-cyan-400'
+                          }`}>
                              {(String(event.timeElapsed) === '0.0' || String(event.timeElapsed).includes('PHASE') || isNaN(parseFloat(String(event.timeElapsed)))) 
                                ? event.timeElapsed 
                                : `OV ${event.timeElapsed}`}
                           </span>
                        </div>
-                       <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">{event.type}</span>
+                       <span className={`text-[9px] font-black uppercase tracking-[0.3em] ${
+                          event.type.includes('WICKET') ? 'text-red-400/50' :
+                          event.type.includes('SIX') ? 'text-purple-400/50' :
+                          event.type.includes('FOUR') ? 'text-emerald-400/50' :
+                          'text-white/30'
+                       }`}>{event.type}</span>
                     </div>
                     <p className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors leading-relaxed">
                        {event.detail}

@@ -59,21 +59,27 @@ export async function fetchLiveMatchData(): Promise<MatchState> {
     const scoreAStr = teamA.score ? (teamA.score.includes("(") ? teamA.score.replace(/, target \d+/, "").replace(/ ov/, "") : `${teamA.score} (20.0)`) : "0/0";
     const scoreBStr = teamB.score ? (teamB.score.includes("(") ? teamB.score.replace(/, target \d+/, "").replace(/ ov/, "") : `${teamB.score} (20.0)`) : (isUpcoming ? "Yet to Bat" : "0/0");
 
-    const summaryRes = await fetch(`http://site.api.espn.com/apis/site/v2/sports/cricket/8039/summary?event=${event.id}`);
-    const summaryData = await summaryRes.json();
+    let commentaryRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/cricket/8048/playbyplay?event=${event.id}`);
+    let commentaryData = await commentaryRes.json();
+
+    if (commentaryData.commentary?.pageCount > 1) {
+      commentaryRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/cricket/8048/playbyplay?event=${event.id}&page=${commentaryData.commentary.pageCount}`);
+      commentaryData = await commentaryRes.json();
+    }
 
     let recentEvents: SportsEvent[] = [];
+    const items = commentaryData.commentary?.items || [];
 
-    if (summaryData.commentary && summaryData.commentary.length > 0) {
-      recentEvents = summaryData.commentary.slice(0, 10).map((c: any, i: number) => ({
-        id: `commentary-${i}`,
-        timeElapsed: c.over?.toFixed(1) || "LIVE",
-        type: c.playType?.name || "Tactical Update",
-        detail: c.text || "Analyzing ball trajectory...",
-        team: "",
-        playerName: "",
-        scoreA: scoreAStr,
-        scoreB: scoreBStr
+    if (items.length > 0) {
+      recentEvents = [...items].reverse().slice(0, 15).map((item: any, i: number) => ({
+        id: item.sequence || `commentary-${i}`,
+        timeElapsed: item.over?.actual?.toString() || "LIVE",
+        type: item.playType?.description?.toUpperCase() || "UPDATE",
+        detail: item.text?.replace(/<\/?strong>/g, "") || "Analyzing ball trajectory...",
+        team: item.batsman?.team?.abbreviation || "",
+        playerName: item.batsman?.athlete?.displayName || "",
+        scoreA: item.homeScore || scoreAStr,
+        scoreB: item.awayScore || scoreBStr
       }));
     } else if (isUpcoming) {
       recentEvents = [
@@ -101,6 +107,8 @@ export async function fetchLiveMatchData(): Promise<MatchState> {
     const targetMatch = status.summary?.match(/target\s*(\d+)|need\s*(\d+)/i);
     const dynamicTarget = targetMatch ? (targetMatch[1] || targetMatch[2]) : "";
 
+    const latestItem = items[items.length - 1];
+
     return {
       elapsedSeconds: isLive ? (status.displayClock || "0.0") : (isPost ? "Final" : "Scheduled"),
       scoreA: isUpcoming ? "Toss Pending" : scoreAStr,
@@ -112,9 +120,9 @@ export async function fetchLiveMatchData(): Promise<MatchState> {
       teamAColor: teamA.team.color ? `#${teamA.team.color}` : "#f10920",
       teamBColor: teamB.team.color ? `#${teamB.team.color}` : "#573f82",
       battingTeam: isUpcoming ? "TBD" : (isLive ? (teamA.score?.includes("Batting") ? teamA.team.displayName : teamB.team.displayName) : teamA.team.displayName),
-      striker: isUpcoming ? "Awaiting Toss..." : (isLive ? "Dynamic Uplink Active" : "Innings Complete"),
-      nonStriker: isUpcoming ? "Awaiting Toss..." : (isLive ? "Waiting..." : "Innings Complete"),
-      bowler: isUpcoming ? "Awaiting Toss..." : (isLive ? "Analyzing Delivery Pattern..." : "Innings Complete"),
+      striker: isUpcoming ? "Awaiting Toss..." : (isLive ? (latestItem?.batsman?.athlete?.displayName || "Dynamic Uplink Active") : "Innings Complete"),
+      nonStriker: isUpcoming ? "Awaiting Toss..." : (isLive ? (latestItem?.otherBatsman?.athlete?.displayName || "Waiting...") : "Innings Complete"),
+      bowler: isUpcoming ? "Awaiting Toss..." : (isLive ? (latestItem?.bowler?.athlete?.displayName || "Analyzing Delivery Pattern...") : "Innings Complete"),
       matchStatus: isUpcoming ? "PRE-GAME" : (isPost ? "MATCH COMPLETE" : (status.type.detail || status.summary)),
       matchNote: matchNote || (isUpcoming ? "TACTICAL PREVIEW: VENUE ANALYSIS ACTIVE" : ""),
       leagueContext: `${leagueName} • ${matchLabel}`,
