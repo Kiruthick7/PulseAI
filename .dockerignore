@@ -1,7 +1,14 @@
 node_modules
 .next
+out
+build
+.env*.local
 .git
-.env.local
-Dockerfile
-README.md
 .gitignore
+README.md
+Dockerfile
+.dockerignore
+.gemini
+artifacts
+brain
+scratch
