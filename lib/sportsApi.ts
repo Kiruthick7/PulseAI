@@ -100,9 +100,16 @@ export async function fetchLiveMatchData(): Promise<MatchState> {
       }];
     }
 
-    const matchNote = event.competitions[0].notes?.[0]?.text || (isPost ? status.type.detail : "");
+    const matchNote = event.competitions[0].notes?.[0]?.text || status.summary || (isPost ? status.type.detail : "");
     const leagueName = event.competitions[0].series?.name || "Indian Premier League";
-    const matchLabel = event.competitions[0].status?.type?.shortDetail || "";
+    let matchLabel = event.competitions[0].description || event.competitions[0].status?.type?.shortDetail || "";
+
+    if (matchLabel.toLowerCase().includes("match") && !matchLabel.toLowerCase().includes("final")) {
+      const matchNum = matchLabel.match(/\d+/)?.[0];
+      if (matchNum) {
+        matchLabel = `Match ${matchNum} of 74`;
+      }
+    }
 
     const targetMatch = status.summary?.match(/target\s*(\d+)|need\s*(\d+)/i);
     const dynamicTarget = targetMatch ? (targetMatch[1] || targetMatch[2]) : "";
